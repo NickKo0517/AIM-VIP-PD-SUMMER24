@@ -14,7 +14,7 @@ from secrets import randbits
 
 class generation_tests(unittest.TestCase):
     """     diagonal tests      """
-    def test_init_diagonal_and_superclass(self):
+    def test_init_diagonal_and_base_class(self):
         #basic tests
         instParams = {"instName": "dpg", "size": 50}
         paramNames = list(instParams.keys()) 
@@ -25,7 +25,7 @@ class generation_tests(unittest.TestCase):
                          f"{paramNames[0]} should be {instParams["instName"]}")
         self.assertEqual(DPG.image_size, instParams["size"], 
                          f"{paramNames[1]} should be {instParams["size"]}")
-        # testing if the superclass image_generator's generate_image method
+        # testing Image_Generator's (base/super class) generate_image method
         seed = randbits(128)
         img = super(Diagonal_Pattern_Generator, DPG).generate_image(seed=seed)
         computeMean = np.mean(img) 

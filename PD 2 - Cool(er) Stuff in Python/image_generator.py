@@ -38,7 +38,7 @@ class Diagonal_Pattern_Generator(Image_Generator):
         image = np.array([[None] * self.image_size] * self.image_size)
         randNumGenerator = np.random.default_rng(seed=seed)
         n_randnums = self.image_size    # number of random numbers in a diagonal 
-        # going coloumn wise, (0,0) → (0,1) → (0,2) ...
+        # Generate random numbers diagonally starting from the largest diagonal
         for r in range(self.image_size):
             diagonal = randNumGenerator.normal(loc=0.5, scale=np.sqrt(0.1), size=n_randnums)
             diagonal = np.clip(a=diagonal, a_min=0.0, a_max=1.0)
@@ -55,10 +55,12 @@ class Gradient_Generator(Image_Generator):
     Gradient_Generator is a class that generates black to white gradients in random directions.
     '''
     # TODO: Write an __init__ method that initializes the superclass object.
+    def __init__(self, image_size: int, name: str):
+        super().__init__(image_size=image_size, name=name)
 
     # TODO: Also write a generate_image method that generates a gradient from black to white in a specified angle.
-
     # TODO: Make the angle randomly vary with the seed.
-
     # TODO: Also draw a line on the image in all gray (0.5) that is parallel to the gradient and passing through the middle of the image.
-    pass
+    def generate_image(self, seed: int) -> np.array:
+        img = np.zeros((self.image_size, self.image_size))
+        return img
