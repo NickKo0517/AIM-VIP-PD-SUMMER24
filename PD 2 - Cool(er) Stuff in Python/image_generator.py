@@ -35,10 +35,20 @@ class Diagonal_Pattern_Generator(Image_Generator):
     # Your choice of what the design is. Spend as little or as much time as you want.
     # Hint: if you're lazy, what are some of the cheapest ways you can take an existing image and make it diagonally symmetric?
     def generate_image(self, seed: int) -> np.array:
+        image = np.array([[None] * self.image_size] * self.image_size)
         randNumGenerator = np.random.default_rng(seed=seed)
-        cache = np.zeros(self.image_size)   # temp variable for symmetric logic
-        cacheSize: int = 0                  # var that goes with temp
-        return None
+        n_randnums = self.image_size    # number of random numbers in a diagonal 
+        # going coloumn wise, (0,0) → (0,1) → (0,2) ...
+        for r in range(self.image_size):
+            diagonal = randNumGenerator.normal(loc=0.5, scale=np.sqrt(0.1), size=n_randnums)
+            diagonal = np.clip(a=diagonal, a_min=0.0, a_max=1.0)
+            # fill in the two corresponding diagonal(s) 
+            for c in range(n_randnums):
+                image[r][c] = diagonal[c]   # lower half
+                if n_randnums != self.image_size and n_randnums != 1:
+                    image[c][r] = diagonal[c]   # upper half
+            n_randnums -= 1
+        return image 
 
 class Gradient_Generator(Image_Generator):
     '''
