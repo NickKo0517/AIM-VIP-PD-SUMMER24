@@ -13,12 +13,13 @@ class Image_Generator:
         # TODO: other initialization as needed
 
     def generate_image(self, seed: int) -> np.array:
+        """might have to restrict values to range [0.0, 1.0]"""
         # Returns an image_size x image_size array filled with numbers sampled from a Normal distribution with mean 0.5 and variance 0.1.
         # Hint: use numpy.
         # TODO: Write this code.
         rng = np.random.default_rng(seed=seed)
-        return rng.normal(loc=0.5, scale=np.sqrt(0.1), 
-                          size=(self.image_size, self.image_size))
+        rawNormal = rng.normal(loc=0.5, scale=np.sqrt(0.1), size=(self.image_size, self.image_size))
+        return np.clip(rawNormal, a_min=0.0, a_max=1.0)     #might be faulty
 
 class Diagonal_Pattern_Generator(Image_Generator):
     '''
@@ -30,13 +31,14 @@ class Diagonal_Pattern_Generator(Image_Generator):
 
     # TODO: Also write a generate_image method that takes in a numerical seed and 
     # generates an image that's symmetric across the diagonals and is NOT a solid color.
-    def generate_image(self, seed: int) -> np.array:
-        pass
-
     # TODO: Make the design randomly vary with the seed.
     # Your choice of what the design is. Spend as little or as much time as you want.
     # Hint: if you're lazy, what are some of the cheapest ways you can take an existing image and make it diagonally symmetric?
-    pass
+    def generate_image(self, seed: int) -> np.array:
+        randNumGenerator = np.random.default_rng(seed=seed)
+        cache = np.zeros(self.image_size)   # temp variable for symmetric logic
+        cacheSize: int = 0                  # var that goes with temp
+        return None
 
 class Gradient_Generator(Image_Generator):
     '''
