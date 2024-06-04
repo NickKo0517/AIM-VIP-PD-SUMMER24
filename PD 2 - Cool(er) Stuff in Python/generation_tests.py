@@ -14,7 +14,7 @@ from secrets import randbits
 
 class generation_tests(unittest.TestCase):
     """     diagonal tests      """
-    def test_init_diagonal(self):
+    def test_init_diagonal_and_superclass(self):
         #basic tests
         instParams = {"instName": "dpg", "size": 50}
         paramNames = list(instParams.keys()) 
@@ -38,5 +38,11 @@ class generation_tests(unittest.TestCase):
         self.assertAlmostEqual(computeStd, np.sqrt(0.1), places=1, 
                                msg=f"expected std(img) == sqrt(0.1) get {computeStd}")
         
-        def test_generate_image(self):
-            image = Image_Generator(image_size=50, name="testImg")
+    def test_diagonal_pattern_image(self):
+        im_size = 50
+        DPG = Diagonal_Pattern_Generator(im_size, "DPG_Obj")
+        image = DPG.generate_image(seed=randbits(128))
+        for i in range(im_size):
+            for j in range(im_size):
+                self.assertEqual(image[i][j], image[j][i],
+                                msg=f"image[{i}][{j}] != image[{j}][{i}]")
