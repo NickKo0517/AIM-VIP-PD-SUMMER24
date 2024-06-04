@@ -45,7 +45,7 @@ class Diagonal_Pattern_Generator(Image_Generator):
             # fill in the two corresponding diagonal(s) 
             for c in range(n_randnums):
                 image[r][c] = diagonal[c]   # lower half
-                if n_randnums != self.image_size and n_randnums != 1:
+                if n_randnums != self.image_size:
                     image[c][r] = diagonal[c]   # upper half
             n_randnums -= 1
         return image 
