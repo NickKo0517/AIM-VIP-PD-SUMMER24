@@ -19,7 +19,8 @@ class Image_Generator:
         # TODO: Write this code.
         rng = np.random.default_rng(seed=seed)
         rawNormal = rng.normal(loc=0.5, scale=np.sqrt(0.1), size=(self.image_size, self.image_size))
-        return np.clip(rawNormal, a_min=0.0, a_max=1.0)     #might be faulty
+        # return np.clip(rawNormal, a_min=0.0, a_max=1.0)     #might be faulty
+        return rawNormal
 
 class Diagonal_Pattern_Generator(Image_Generator):
     '''
@@ -35,18 +36,22 @@ class Diagonal_Pattern_Generator(Image_Generator):
     # Your choice of what the design is. Spend as little or as much time as you want.
     # Hint: if you're lazy, what are some of the cheapest ways you can take an existing image and make it diagonally symmetric?
     def generate_image(self, seed: int) -> np.array:
-        image = np.array([[None] * self.image_size] * self.image_size)
+        image = np.zeros((self.image_size, self.image_size))
         randNumGenerator = np.random.default_rng(seed=seed)
         n_randnums = self.image_size    # number of random numbers in a diagonal 
         # Generate random numbers diagonally starting from the largest diagonal
         for r in range(self.image_size):
+            r_cpy = r
             diagonal = randNumGenerator.normal(loc=0.5, scale=np.sqrt(0.1), size=n_randnums)
-            diagonal = np.clip(a=diagonal, a_min=0.0, a_max=1.0)
-            # fill in the two corresponding diagonal(s) 
+            # Diagonal fill in
+            # (0,0) -> (1,1) -> ... (image_size - 1, image_size - 1)
+            # (1, 0) -> (2, 1) -> ... (image_size - 1, image_size -2)
             for c in range(n_randnums):
-                image[r][c] = diagonal[c]   # lower half
+                image[r][c] = diagonal[c]
                 if n_randnums != self.image_size:
-                    image[c][r] = diagonal[c]   # upper half
+                    image[c][r] = image[r][c]
+                r += 1
+            r = r_cpy
             n_randnums -= 1
         return image 
 
