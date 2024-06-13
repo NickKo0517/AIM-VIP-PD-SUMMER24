@@ -67,5 +67,35 @@ class Gradient_Generator(Image_Generator):
     # TODO: Make the angle randomly vary with the seed.
     # TODO: Also draw a line on the image in all gray (0.5) that is parallel to the gradient and passing through the middle of the image.
     def generate_image(self, seed: int) -> np.array:
-        img = np.zeros((self.image_size, self.image_size))
+        img = np.zeros((self.image_size, self.image_size))  
+        rng = np.random.default_rng(seed=seed)
+
+        grad_direction = rng.random(1) % 8
+        grad_pattern = np.linspace(0, self.image_size, self.image_size)
+        if grad_direction == 0:
+            # left to right
+            img = np.tile(grad_pattern, (self.image_size, 1))
+        elif grad_direction == 1:
+            # right to left
+            grad_pattern = np.linspace(self.image_size, 0, self.image_size)
+            img = np.tile(grad_pattern, (self.image_size, 1))
+        elif grad_direction == 2:
+            # top to bottom
+            img = np.tile(grad_direction, (1, self.image_size))
+        elif grad_direction == 3:
+            # bottom to top
+            grad_pattern = np.linspace(self.image_size, 0, self.image_size)
+            img = np.tile(grad_direction, (1, self.image_size))
+        elif grad_direction == 5:
+            # right upper -> left lower
+            pass
+        elif grad_direction == 4:
+            # left upper -> right lower
+            pass
+        elif grad_direction == 6:
+            # right lower -> left upper
+            pass
+        else:
+            # left lower -> right upper
+            pass
         return img
