@@ -39,6 +39,7 @@ class generation_tests(unittest.TestCase):
                                msg=f"expect mean(img) == 0.5, get {computeMean}")
         self.assertAlmostEqual(computeStd, np.sqrt(0.1), places=1, 
                                msg=f"expected std(img) == sqrt(0.1) get {computeStd}")
+
     def test_diagonal_pattern_image(self):
         im_size = 50
         DPG = Diagonal_Pattern_Generator(im_size, "DPG_Obj")
@@ -46,9 +47,10 @@ class generation_tests(unittest.TestCase):
         for i in range(im_size):
             for j in range(im_size):
                 self.assertEqual(image[i][j], image[j][i], msg=f"image[{i}][{j}] != image[{j}][{i}]")
+        # save image as grayscale to local dir for view
+        plt.imsave("diagonal.png", image, cmap="gray")
     
     """     gradient tests     """
-
     def test_gradient_generate_image(self):
         # class instantiation tests
         gradGen_obj = Gradient_Generator(image_size=50, name = "gradGen_obj")
@@ -59,22 +61,27 @@ class generation_tests(unittest.TestCase):
         seed = randbits(128)
         image = gradGen_obj.generate_image(seed=seed)
         self.assertEqual(image.shape, (gradGen_obj.image_size, gradGen_obj.image_size),
-                         msg=f"expected (50,50), got {image.shape}")
+                         msg=f"expected (50,50), got {image.shape} when seed = {seed}")
 
         direction = seed % 8
+        print("direction = {}".format(direction))
         if direction == 0:
             # left -> right
             # (from left to right, ) first test if the colors are fading
             self.assertTrue(image[:,0] == np.zeros((image.shape[0], 1)), 
-                            msg=f"expect the first column to be all 0's")
+                            msg=f"expect the first column to be all 0's when seed = {seed}, \
+                            direction = {dir}")
             for col in range(1, image.shape[1]):
                 prev = col - 1
                 # first check if all columns have same value in each entry
                 prev_value, col_value = image[0, prev], image[0, col]
-                self.assertEqual(image[:, prev] / prev_value, np.ones((image.shape[0], 1)))
-                self.assertEqual(image[:, col] / col_value, np.ones((image.shape[0], 1)))
+                self.assertEqual(image[:, prev] / prev_value, np.ones((image.shape[0], 1)),
+                                 msg=f"assertion failed when seed = {seed}, direction  {dir}, at column {col}")
+                self.assertEqual(image[:, col] / col_value, np.ones((image.shape[0], 1)),
+                                 msg=f"assertion failed when seed = {seed}, direction  {dir}, at column {col}")
                 # then check if the prev entries are smaller than col entries by 1
-                self.assertEqual(image[:, col] - image[:, prev], np.ones((image.shape[0], 1)))
+                self.assertEqual(image[:, col] - image[:, prev], np.ones((image.shape[0], 1)),
+                                 msg=f"assertion failed when seed = {seed}, direction  {dir}, at column {col}")
         elif direction == 1:
             # right -> left
             # from right to left, first test if the colors are fading
@@ -90,8 +97,10 @@ class generation_tests(unittest.TestCase):
                 self.assertEqual(image[:, prev] - image[:, col], np.ones((image.shape[0], 1)))
         elif direction == 2:
             # top -> bottom
+            pass
         elif direction == 3:
             # bottom -> top
+            pass
         elif direction == 4:
             pass
         elif direction == 5:
@@ -100,3 +109,8 @@ class generation_tests(unittest.TestCase):
             pass
         else:
             pass
+        # save image as grayscale to local dir for view
+        plt.imsave("gradient.png", image, cmap="gray")
+
+        # Save gradient to another file for debugging and better view 
+        np.savetxt("gradient.txt", image, fmt="%.2f", delimiter=', ')

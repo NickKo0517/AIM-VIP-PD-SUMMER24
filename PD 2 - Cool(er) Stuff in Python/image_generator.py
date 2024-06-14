@@ -68,6 +68,7 @@ class Gradient_Generator(Image_Generator):
     # TODO: Also draw a line on the image in all gray (0.5) that is parallel to the gradient and passing through the middle of the image.
     def generate_image(self, seed: int) -> np.array:
         img = np.zeros((self.image_size, self.image_size))  
+        print(f"dim(img) = {img.shape} at beginning of {self.generate_image.__name__}")
         grad_direction = seed % 8
         grad_pattern = np.linspace(0, self.image_size, self.image_size)
 
@@ -97,4 +98,5 @@ class Gradient_Generator(Image_Generator):
         else:
             # right lower -> left upper
             pass
+        print(f"dim(img) = {img.shape} at end of {self.generate_image.__name__}")
         return img
