@@ -60,6 +60,43 @@ class generation_tests(unittest.TestCase):
         image = gradGen_obj.generate_image(seed=seed)
         self.assertEqual(image.shape, (gradGen_obj.image_size, gradGen_obj.image_size),
                          msg=f"expected (50,50), got {image.shape}")
-        
 
-        
+        direction = seed % 8
+        if direction == 0:
+            # left -> right
+            # (from left to right, ) first test if the colors are fading
+            self.assertTrue(image[:,0] == np.zeros((image.shape[0], 1)), 
+                            msg=f"expect the first column to be all 0's")
+            for col in range(1, image.shape[1]):
+                prev = col - 1
+                # first check if all columns have same value in each entry
+                prev_value, col_value = image[0, prev], image[0, col]
+                self.assertEqual(image[:, prev] / prev_value, np.ones((image.shape[0], 1)))
+                self.assertEqual(image[:, col] / col_value, np.ones((image.shape[0], 1)))
+                # then check if the prev entries are smaller than col entries by 1
+                self.assertEqual(image[:, col] - image[:, prev], np.ones((image.shape[0], 1)))
+        elif direction == 1:
+            # right -> left
+            # from right to left, first test if the colors are fading
+            self.assertTrue(image[:,image.shape[1] - 1] == np.zeros((image.shape[0], 1)), 
+                            msg=f"expect the last column to be all 0's")
+            for col in range(image.shape[1] - 1, -1, step=-1):
+                prev = col - 1
+                # first check if all columns have same value in each entry
+                prev_value, col_value = image[0, prev], image[0, col]
+                self.assertEqual(image[:, prev] / prev_value, np.ones((image.shape[0], 1)))
+                self.assertEqual(image[:, col] / col_value, np.ones((image.shape[0], 1)))
+                # then check if the col entries are smaller than prev entries by 1
+                self.assertEqual(image[:, prev] - image[:, col], np.ones((image.shape[0], 1)))
+        elif direction == 2:
+            # top -> bottom
+        elif direction == 3:
+            # bottom -> top
+        elif direction == 4:
+            pass
+        elif direction == 5:
+            pass
+        elif direction == 6:
+            pass
+        else:
+            pass
