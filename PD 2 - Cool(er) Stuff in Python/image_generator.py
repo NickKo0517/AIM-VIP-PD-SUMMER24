@@ -72,20 +72,26 @@ class Gradient_Generator(Image_Generator):
         grad_direction = seed % 8
         grad_pattern = np.linspace(0, self.image_size, self.image_size)
 
+        mid = int(self.image_size / 2) 
         if grad_direction == 0:
             # left to right
             img = np.tile(grad_pattern, (self.image_size, 1))
+            img[mid] = 0.5 * np.ones(self.image_size)
         elif grad_direction == 1:
             # right to left
             grad_pattern = np.linspace(self.image_size, 0, self.image_size)
             img = np.tile(grad_pattern, (self.image_size, 1))
+            img[mid] = 0.5 * np.ones(self.image_size)
         elif grad_direction == 2:
             # top to bottom
             img = (np.tile(grad_pattern, (self.image_size, 1))).T
+            img[:, mid] =  0.5 * np.ones((1, self.image_size))
         elif grad_direction == 3:
             # bottom to top
             grad_pattern = np.linspace(self.image_size, 0, self.image_size)
             img = (np.tile(grad_direction, (1, self.image_size))).T
+            print(img.shape)
+            img[:, mid] =  0.5 * np.ones((1, self.image_size))
         elif grad_direction == 4:
             # left upper -> right lower
             pass
