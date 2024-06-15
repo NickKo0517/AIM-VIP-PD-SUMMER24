@@ -48,7 +48,7 @@ class generation_tests(unittest.TestCase):
             for j in range(im_size):
                 self.assertEqual(image[i][j], image[j][i], msg=f"image[{i}][{j}] != image[{j}][{i}]")
         # save image as grayscale to local dir for view
-        plt.imsave("diagonal.png", image, cmap="gray")
+        # plt.imsave("diagonal.png", image, cmap="gray")
     
     """     gradient tests     """
     def test_gradient_generate_image(self):
@@ -68,7 +68,8 @@ class generation_tests(unittest.TestCase):
         if direction == 0:
             # left -> right
             # (from left to right, ) first test if the colors are fading
-            self.assertTrue(image[:,0] == np.zeros((image.shape[0], 1)), 
+            zeroes = np.zeros((image.shape[0], 1))
+            self.assertTrue(np.all(image[:,0], axis=0),  # AND all elements in column 0
                             msg=f"expect the first column to be all 0's when seed = {seed}, \
                             direction = {dir}")
             for col in range(1, image.shape[1]):
@@ -85,16 +86,17 @@ class generation_tests(unittest.TestCase):
         elif direction == 1:
             # right -> left
             # from right to left, first test if the colors are fading
-            self.assertTrue(image[:,image.shape[1] - 1] == np.zeros((image.shape[0], 1)), 
-                            msg=f"expect the last column to be all 0's")
-            for col in range(image.shape[1] - 1, -1, step=-1):
+            self.assertTrue(np.all(image[:,image.shape[1] - 1], axis=0) == False, 
+                            msg=f"expect the last column to be all 0's when seed = {seed},\
+                            direction = {direction}")
+            for col in range(image.shape[1] - 1, -1, -1):
                 prev = col - 1
                 # first check if all columns have same value in each entry
                 prev_value, col_value = image[0, prev], image[0, col]
-                self.assertEqual(image[:, prev] / prev_value, np.ones((image.shape[0], 1)))
-                self.assertEqual(image[:, col] / col_value, np.ones((image.shape[0], 1)))
+                self.assertTrue(np.all((image[:, prev] / prev_value), axis=0), msg=f"not all elements are identical in column {prev}")
+                self.assertTrue(np.all((image[:, col] / col_value), axis=0), msg=f"not all elements are identical in column {col}")
                 # then check if the col entries are smaller than prev entries by 1
-                self.assertEqual(image[:, prev] - image[:, col], np.ones((image.shape[0], 1)))
+                self.asserTrue(np.all((image[:, prev] - image[:, col]), axis=0))
         elif direction == 2:
             # top -> bottom
             pass
