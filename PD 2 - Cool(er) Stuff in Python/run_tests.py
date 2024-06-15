@@ -2,8 +2,7 @@ from generation_tests import *
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
-    unittest.main()
-
+    # unittest.main()
     """     view image generated    """
     # size, name = 50, "testing"
     # image = Diagonal_Pattern_Generator(image_size=size, name=name)
@@ -15,3 +14,10 @@ if __name__ == "__main__":
     
     # """ Save imgArray to another file for debugging and better view """
     # np.savetxt("imgMatrix.txt", imgArray ,fmt="%.2f", delimiter=', ')
+
+    # R = np.linspace(0, 10, 10)
+    R = range(10)
+    img = (np.tile(R, (10, 1))).T
+    print(type(img))
+    print(img.shape)
+    print(img)

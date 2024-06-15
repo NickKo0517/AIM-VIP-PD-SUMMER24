@@ -81,11 +81,11 @@ class Gradient_Generator(Image_Generator):
             img = np.tile(grad_pattern, (self.image_size, 1))
         elif grad_direction == 2:
             # top to bottom
-            img = np.tile(grad_direction, (1, self.image_size))
+            img = (np.tile(grad_pattern, (self.image_size, 1))).T
         elif grad_direction == 3:
             # bottom to top
             grad_pattern = np.linspace(self.image_size, 0, self.image_size)
-            img = np.tile(grad_direction, (1, self.image_size))
+            img = (np.tile(grad_direction, (1, self.image_size))).T
         elif grad_direction == 4:
             # left upper -> right lower
             pass

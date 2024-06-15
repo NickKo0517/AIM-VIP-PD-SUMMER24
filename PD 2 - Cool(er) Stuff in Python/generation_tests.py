@@ -47,7 +47,7 @@ class generation_tests(unittest.TestCase):
         for i in range(im_size):
             for j in range(im_size):
                 self.assertEqual(image[i][j], image[j][i], msg=f"image[{i}][{j}] != image[{j}][{i}]")
-        # save image as grayscale to local dir for view
+        # save image as grayscale to local directory for view
         # plt.imsave("diagonal.png", image, cmap="gray")
     
     """     gradient tests     """
@@ -59,11 +59,10 @@ class generation_tests(unittest.TestCase):
                          got {gradGen_obj.name}")
         # generate_image tests
         seed = randbits(128)
+        direction = seed % 8
         image = gradGen_obj.generate_image(seed=seed)
         self.assertEqual(image.shape, (gradGen_obj.image_size, gradGen_obj.image_size),
-                         msg=f"expected (50,50), got {image.shape} when seed = {seed}")
-
-        direction = seed % 8
+                         msg=f"expected (50,50), got {image.shape} when seed = {seed}, direction = {direction}")
         print("direction = {}".format(direction))
         if direction == 0:
             # left -> right
@@ -71,18 +70,21 @@ class generation_tests(unittest.TestCase):
             zeroes = np.zeros((image.shape[0], 1))
             self.assertTrue(np.all(image[:,0], axis=0),  # AND all elements in column 0
                             msg=f"expect the first column to be all 0's when seed = {seed}, \
-                            direction = {dir}")
+                            direction = {direction}")
             for col in range(1, image.shape[1]):
                 prev = col - 1
                 # first check if all columns have same value in each entry
                 prev_value, col_value = image[0, prev], image[0, col]
                 self.assertEqual(image[:, prev] / prev_value, np.ones((image.shape[0], 1)),
-                                 msg=f"assertion failed when seed = {seed}, direction  {dir}, at column {col}")
+                                 msg=f"assertion failed when seed = {seed}, direction = {direction}\
+                                 , at column {col}")
                 self.assertEqual(image[:, col] / col_value, np.ones((image.shape[0], 1)),
-                                 msg=f"assertion failed when seed = {seed}, direction  {dir}, at column {col}")
+                                 msg=f"assertion failed when seed = {seed}, direction  {direction},\
+                                 at column {col}")
                 # then check if the prev entries are smaller than col entries by 1
                 self.assertEqual(image[:, col] - image[:, prev], np.ones((image.shape[0], 1)),
-                                 msg=f"assertion failed when seed = {seed}, direction  {dir}, at column {col}")
+                                 msg=f"assertion failed when seed = {seed}, direction  {direction},\
+                                 at column {col}")
         elif direction == 1:
             # right -> left
             # from right to left, first test if the colors are fading
@@ -96,7 +98,7 @@ class generation_tests(unittest.TestCase):
                 self.assertTrue(np.all((image[:, prev] / prev_value), axis=0), msg=f"not all elements are identical in column {prev}")
                 self.assertTrue(np.all((image[:, col] / col_value), axis=0), msg=f"not all elements are identical in column {col}")
                 # then check if the col entries are smaller than prev entries by 1
-                self.asserTrue(np.all((image[:, prev] - image[:, col]), axis=0))
+                self.assertTrue(np.all((image[:, prev] - image[:, col]), axis=0))
         elif direction == 2:
             # top -> bottom
             pass
