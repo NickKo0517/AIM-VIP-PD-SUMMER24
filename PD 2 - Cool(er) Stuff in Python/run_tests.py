@@ -21,5 +21,3 @@ if __name__ == "__main__":
     print(type(img))
     print(img.shape)
     print(img)
-
-    print(np.ones((10, 1)))

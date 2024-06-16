@@ -173,9 +173,9 @@ class generation_tests(unittest.TestCase):
             # bottom -> top
             # first check the first ROW: AND across first row, expect all zeros (false)
             self.assertFalse(np.all(image[image.shape[0] - 1, :mid]), 
-                             msg=f"image[{image.shape[0]}, :{mid}] not all zeroes")
-            self.assertFalse(np.all(image[image.shape[0], mid + 1:]), 
-                             msg=f"image[{image.shape[0]}, {mid + 1}:] not all zeroes")
+                             msg=f"image[{image.shape[0] - 1}, :{mid}] not all zeroes")
+            self.assertFalse(np.all(image[image.shape[0] - 1, mid + 1:]), 
+                             msg=f"image[{image.shape[0] - 1}, {mid + 1}:] not all zeroes")
             for row in range(image.shape[0] - 1, -1, -1):
                 prev = row - 1
                 prev_val, row_val = image[prev, 0], image[row, 0]
