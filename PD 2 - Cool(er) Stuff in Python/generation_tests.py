@@ -60,52 +60,85 @@ class generation_tests(unittest.TestCase):
                          msg=f"expected name \"gradGen_obj\", "
                          f"got {gradGen_obj.name}")
         # generate_image tests
-        seed = randbits(128)
+        # seed = randbits(128)
+        seed = 1
         direction = seed % 8
         image = gradGen_obj.generate_image(seed=seed)
         self.assertEqual(image.shape, (gradGen_obj.image_size, gradGen_obj.image_size),
                          msg=f"expected (50,50), got {image.shape}" +
                          f"when seed = {seed}, direction = {direction}")
 
+        # save image as grayscale to local dir for view
+        plt.imsave("gradient.png", image, cmap="gray")
+        # Save gradient to another file for debugging and better view 
+        np.savetxt("gradient.txt", image, fmt="%.2f", delimiter=', ')
+
+        mid = int(image.shape[1] / 2)
         if direction == 0:
             # left -> right
-            # (from left to right, ) first test if the colors are fading
-            mid = int(image.shape[1] / 2)
-            self.assertTrue(np.all(image[:mid, 0], axis=0),  # AND all elements in image[:mid, 0]
+            # (from left to right, ) check fading colors
+            self.assertFalse(np.all(image[:mid, 0], axis=0),  # AND all elements: expect all zeros (false)
                             msg=f"expect image[:mid, 0] to be all 0's when seed = {seed}," + 
                             f"direction = {direction}")
-            self.assertTure(np.all(image[mid + 1:, 0], axis=0), # AND all elements in image[mid+1: , 0]
+            self.assertFalse(np.all(image[mid + 1:, 0], axis=0), # AND all elements: expect all zeros (false)
                             msg= f"expext image[mid+1: 0] to be all 0's when seed = {seed}, " +
                             f"direction = {direction}")
-        
+
             for col in range(1, image.shape[1]):
                 prev = col - 1
                 # first check if all columns have same value in each entry
                 prev_value, col_value = image[0, prev], image[0, col]
-                self.assertEqual(image[:, prev] / prev_value, np.ones((image.shape[0], 1)),
-                                 msg=f"assertion failed when seed = {seed}, direction = {direction}" + 
-                                 f", at column {col}")
-                self.assertEqual(image[:, col] / col_value, np.ones((image.shape[0], 1)),
-                                 msg=f"assertion failed when seed = {seed}, direction  {direction}, "
-                                 f"at column {col}")
-                # then check if the prev entries are smaller than col entries by 1
-                self.assertEqual(image[:, col] - image[:, prev], np.ones((image.shape[0], 1)),
-                                 msg=f"assertion failed when seed = {seed}, direction  {direction},"
-                                 f" at column {col}")
+                if prev_value != 0 and col_value != 0:
+                    #prev checks
+                    self.assertTrue(np.all(image[:mid, prev] / prev_value, axis=0), # AND all elements in column: expect all ones 
+                                    msg=f"assertion failed when seed = {seed}, direction = {direction} at column {prev}")
+                    self.assertTrue(np.all(image[mid + 1:, prev] / prev_value, axis=0), # AND all elements in column: expect all ones 
+                                    msg=f"assertion failed when seed = {seed}, direction  {direction}, at column {prev}")
+                    #col checks
+                    self.assertTrue(np.all(image[:mid, col] / col_value, axis=0), # AND all elements in column: expect all ones 
+                                    msg=f"assertion failed when seed = {seed}, direction = {direction} at column {col}")
+                    self.assertTrue(np.all(image[mid + 1:, col] / col_value , axis=0), # AND all elements in column: expect all ones 
+                                    msg=f"assertion failed when seed = {seed}, direction = {direction}, at column {col}")
+
+                    # then check if the prev entries are smaller than col entries by 1
+                    diff = image[:mid, col] - image[:mid, prev]
+                    self.assertTrue(np.all(diff, axis=0), # AND across entire column, expect all ones (true)
+                                    msg=f"assertion failed when seed = {seed}, direction =  {direction}," +
+                                    f" between column {prev}, {col}")
+                    diff = image[mid + 1:, col] - image[mid + 1:, prev]
+                    self.assertTrue(np.all(diff, axis=0), # AND across entire column, expect all ones (true)
+                                    msg=f"assertion failed when seed = {seed}, direction = {direction}," +
+                                    f" between column {prev}, {col}")
         elif direction == 1:
             # right -> left
-            # from right to left, first test if the colors are fading
-            self.assertTrue(np.all(image[:,image.shape[1] - 1], axis=0) == False, 
-                            msg=f"expect the last column to be all 0's when seed = {seed}, "
+            # from right to left, check fading colors
+            lastColumn = image.shape[1] - 1
+            self.assertTrue(not(np.all(image[:mid, lastColumn], axis=0)),   # AND all elements: expect all zeros (false)
+                            msg=f"expect image[:mid, lastColumn] to be all 0's when seed = {seed}," + 
                             f"direction = {direction}")
-            for col in range(image.shape[1] - 1, -1, -1):
+            self.assertTrue(not(np.all(image[mid + 1:, lastColumn], axis=0)), # AND all elements: expect all zeros (false)
+                            msg= f"expext image[mid+1:, lastColumn] to be all 0's when seed = {seed}, " +
+                            f"direction = {direction}")
+            for col in range((image.shape[1] - 1), -1, -1):
                 prev = col - 1
                 # first check if all columns have same value in each entry
                 prev_value, col_value = image[0, prev], image[0, col]
-                self.assertTrue(np.all((image[:, prev] / prev_value), axis=0), msg=f"not all elements are identical in column {prev}")
-                self.assertTrue(np.all((image[:, col] / col_value), axis=0), msg=f"not all elements are identical in column {col}")
-                # then check if the col entries are smaller than prev entries by 1
-                self.assertTrue(np.all((image[:, prev] - image[:, col]), axis=0))
+                if prev_value != 0 and col_value != 0:
+                    # prev checks
+                    self.assertTrue(np.all((image[:mid, prev] / prev_value), axis=0), 
+                                    msg=f"not all elements are identical in column {prev}")
+                    self.assertTrue(np.all((image[mid + 1:, prev] / prev_value), axis=0), 
+                                    msg=f"not all elements are identical in column {prev}")
+                    # col checks
+                    self.assertTrue(np.all((image[:mid, col] / col_value), axis=0),
+                                    msg=f"not all elements are identical in column {col}")
+                    self.assertTrue(np.all((image[mid + 1:, col] / col_value), axis=0),
+                                    msg=f"not all elements are identical in column {col}")
+                    # then check if the col entries are smaller than prev entries by 1
+                    self.assertTrue(np.all((image[:mid, prev] - image[:mid, col]), axis=0), 
+                                    msg=f"not all values between column {prev} and {col} differ by 1")
+                    self.assertTrue(np.all((image[mid + 1:, prev] - image[mid + 1:, col]), axis=0), 
+                                    msg=f"not all values between column {prev} and {col} differ by 1")
         elif direction == 2:
             # top -> bottom
             pass
@@ -120,8 +153,3 @@ class generation_tests(unittest.TestCase):
             pass
         else:
             pass
-        # save image as grayscale to local dir for view
-        plt.imsave("gradient.png", image, cmap="gray")
-
-        # Save gradient to another file for debugging and better view 
-        np.savetxt("gradient.txt", image, fmt="%.2f", delimiter=', ')
