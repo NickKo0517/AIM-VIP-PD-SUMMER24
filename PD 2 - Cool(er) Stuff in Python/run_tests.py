@@ -15,9 +15,11 @@ if __name__ == "__main__":
     # """ Save imgArray to another file for debugging and better view """
     # np.savetxt("imgMatrix.txt", imgArray ,fmt="%.2f", delimiter=', ')
 
-    # R = np.linspace(0, 10, 10)
+    R = np.linspace(0, 10, 10)
     R = range(10)
     img = (np.tile(R, (10, 1))).T
     print(type(img))
     print(img.shape)
     print(img)
+
+    print(np.ones((10, 1)))

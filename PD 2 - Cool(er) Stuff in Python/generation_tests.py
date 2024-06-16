@@ -61,7 +61,7 @@ class generation_tests(unittest.TestCase):
                          f"got {gradGen_obj.name}")
         # generate_image tests
         # seed = randbits(128)
-        seed = 1
+        seed = 3
         direction = seed % 8
         image = gradGen_obj.generate_image(seed=seed)
         self.assertEqual(image.shape, (gradGen_obj.image_size, gradGen_obj.image_size),
@@ -141,10 +141,64 @@ class generation_tests(unittest.TestCase):
                                     msg=f"not all values between column {prev} and {col} differ by 1")
         elif direction == 2:
             # top -> bottom
-            pass
+            # first check the first ROW: AND across first row, expect all zeros (false)
+            self.assertFalse(np.all(image[0, :mid]), 
+                             msg=f"image[0, :{mid}] not all zeroes")
+            self.assertFalse(np.all(image[0, mid + 1:]), 
+                             msg=f"image[0, {mid + 1}:] not all zeroes")
+            for row in range(1, image.shape[0]):
+                prev = row - 1
+                prev_val, row_val = image[prev, 0], image[row, 0]
+                if prev_val != 0 and row_val != 0:
+                    # prev checks
+                    self.assertTrue(np.all(image[prev, :mid] / prev_val),
+                                    msg=f"not all elements in image[{prev}, :{mid}] are identical")
+                    self.assertTrue(np.all(image[prev, mid + 1:] / prev_val),
+                                    msg=f"not all elements in image[{prev}, :{mid}] are identical")
+                    # row checks
+                    self.assertTrue(np.all(image[row, :mid] / row_val),
+                                    msg=f"not all elements in image[{row}, :{mid}] are identical")
+                    self.assertTrue(np.all(image[row, mid + 1:] / row_val),
+                                    msg=f"not all elements in image[{row}, :{mid}] are identical")
+                    # diff = row - prev checks
+                    diff = image[row, :mid] - image[prev, :mid]
+                    self.assertTrue(np.all(diff), 
+                                    msg=f"not all elements in image[{row}, :{mid}] - image[{prev}, :{mid}]" + \
+                                        " are identicial")
+                    diff = image[row, mid + 1:] - image[prev, mid + 1:]
+                    self.assertTrue(np.all(diff), 
+                                    msg=f"not all elements in image[{row}, {mid + 1}:] - image[{prev}, {mid + 1}:]" + \
+                                        " are identicial")
         elif direction == 3:
             # bottom -> top
-            pass
+            # first check the first ROW: AND across first row, expect all zeros (false)
+            self.assertFalse(np.all(image[image.shape[0] - 1, :mid]), 
+                             msg=f"image[{image.shape[0]}, :{mid}] not all zeroes")
+            self.assertFalse(np.all(image[image.shape[0], mid + 1:]), 
+                             msg=f"image[{image.shape[0]}, {mid + 1}:] not all zeroes")
+            for row in range(image.shape[0] - 1, -1, -1):
+                prev = row - 1
+                prev_val, row_val = image[prev, 0], image[row, 0]
+                if prev_val != 0 and row_val != 0:
+                    # prev checks
+                    self.assertTrue(np.all(image[prev, :mid] / prev_val),
+                                    msg=f"not all elements in image[{prev}, :{mid}] are identical")
+                    self.assertTrue(np.all(image[prev, mid + 1:] / prev_val),
+                                    msg=f"not all elements in image[{prev}, :{mid}] are identical")
+                    # row checks
+                    self.assertTrue(np.all(image[row, :mid] / row_val),
+                                    msg=f"not all elements in image[{row}, :{mid}] are identical")
+                    self.assertTrue(np.all(image[row, mid + 1:] / row_val),
+                                    msg=f"not all elements in image[{row}, :{mid}] are identical")
+                    # diff = prev - row checks
+                    diff = image[prev, :mid] - image[row, :mid]
+                    self.assertTrue(np.all(diff), 
+                                    msg=f"not all elements in image[{prev}, :{mid}] - image[{row}, :{mid}]" + \
+                                    " are identicial")
+                    diff = image[prev, mid + 1:] - image[row, mid + 1:]
+                    self.assertTrue(np.all(diff), 
+                                    msg=f"not all elements in image[{prev}, {mid + 1}:] - image[{row}, {mid + 1}:]" + \
+                                    " are identicial")
         elif direction == 4:
             pass
         elif direction == 5:
