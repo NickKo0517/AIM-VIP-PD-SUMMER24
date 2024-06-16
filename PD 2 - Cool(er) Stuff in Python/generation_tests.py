@@ -60,8 +60,7 @@ class generation_tests(unittest.TestCase):
                          msg=f"expected name \"gradGen_obj\", "
                          f"got {gradGen_obj.name}")
         # generate_image tests
-        # seed = randbits(128)
-        seed = 3
+        seed = randbits(128)
         direction = seed % 8
         image = gradGen_obj.generate_image(seed=seed)
         self.assertEqual(image.shape, (gradGen_obj.image_size, gradGen_obj.image_size),
